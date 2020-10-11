@@ -1,4 +1,4 @@
-package com.bichoncode.Exception;
+package com.bichoncode.exception;
 
 /**
  * 通用异常处理类
