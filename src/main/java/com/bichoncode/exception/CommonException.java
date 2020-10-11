@@ -1,7 +1,8 @@
 package com.bichoncode.exception;
 
 /**
- * 异常处理类
+ * 通用异常处理类
+ * @author ChenYan
  */
 public class CommonException extends RuntimeException {
     private String message;
