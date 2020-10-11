@@ -1,10 +1,7 @@
 package com.bichoncode.exception;
 
 /**
- * 通用异常处理类
- * @author BichonCode
- * @mail chenzhichaohh@163.com
- * @create 2020/10/10
+ * 异常处理类
  */
 public class CommonException extends RuntimeException {
     private String message;
