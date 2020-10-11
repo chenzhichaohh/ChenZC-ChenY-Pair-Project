@@ -75,11 +75,11 @@ public class Expression {
      * @Param number 运算符的个数
      **/
     public BiTreeNode generateNode(int number) {
-        //如果是0就构造叶子节点
+        // 如果是0就构造叶子节点
         if (number == 0) {
             return new BiTreeNode(Fraction.generateFraction(), null, null, 1);
         }
-        //其他都是构造符号节点
+        // 其他都是构造符号节点
         OperatorCharNode parent = new OperatorCharNode(null, null, OPERATORS[RandomUtils.getARandom(4)]);
         int left = RandomUtils.getARandom(number);
         // 递归下去构造左孩子和右孩子

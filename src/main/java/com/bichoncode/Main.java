@@ -23,8 +23,15 @@ public class Main {
         // 题目数量
         int number = 0;
 
+        System.out.println("1.生成题目请输入： -n 题目树龄 -r 题目数字的范围。例如：-n 5 -r 5");
+        System.out.println("2.对照答案请输入： -e：练习题的绝对路径 -a： 答案的绝对路径。例如: -e F:exercises.txt -a F:answerfile.txt");
+        System.out.println("请输入");
+        Scanner sc = new Scanner(System.in);
+        String string = sc.nextLine();
+        args = string.split("\\s+");
+
         // 判断参数是否正确
-        if (args.length < 4  ) {
+        if (args.length < 4) {
             throw new CommonException("请检查参数是否正确");
         }
 
@@ -71,6 +78,7 @@ public class Main {
                 fileWriter.flush();
                 printWriter.close();
                 fileWriter.close();
+                System.out.println("题目已生成，文件路径为F:exercises.txt");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -83,11 +91,14 @@ public class Main {
                 fileWriter.flush();
                 printWriter.close();
                 fileWriter.close();
+                System.out.println("答案已生成，文件路径为F:answerfile.txt");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+
         }
+
 
     }
 }

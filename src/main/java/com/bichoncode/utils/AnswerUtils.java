@@ -22,43 +22,39 @@ public class AnswerUtils {
             throw new CommonException("生成题目的个数必须大于0");
         }
         if (answer_range < 1) {
-            throw new CommonException("运算结果范围必须大于等于1");
+            throw new CommonException("运算数字的范围必须大于等于1");
         }
+        // 存储去重之后的题目
         HashMap<String, String> hashMap = new HashMap<>();
 
-        // TODO
+       // 存储刚生成的题目（此时未去重）
         HashMap<Expression, String> hashMap2 = new HashMap<>();
 
-        for (int i = 1; hashMap2.size() < exam_number; ) {
-            // 因为在运算的过程中会出现n÷0的情况，这时候就会抛异常
-            Expression expression = new Expression(3, answer_range);
-            if ((hashMap.get(expression.toString()) != null || !"".equals(expression.toString()))
-                    &&
-                    !expression.divisorIsZero()) {
-                hashMap2.put(expression, expression.getRoot().result.toString());
-                i++;
+        while (hashMap.size() < exam_number) {
+            for (int i = 1; hashMap2.size() < exam_number + 2000; ) {
+                // 因为在运算的过程中会出现n/0的情况，这时候就会抛异常
+                Expression expression = new Expression(3, answer_range);
+                if ((hashMap.get(expression.toString()) != null || !"".equals(expression.toString()))
+                        &&
+                        !expression.divisorIsZero()) {
+                    hashMap2.put(expression, expression.getRoot().result.toString());
+                    i++;
+                }
             }
-        }
-        // 去重
-        Map<Expression, String> distincMap = distinc(hashMap2);
-        for (Expression expression : distincMap.keySet()) {
-            hashMap.put(expression.toString(), expression.getRoot().result.toString());
-        }
-
-        // 从hashMap中找出重复的运算表达式
+            // 去重
+            HashMap<Expression, String> distincMap = distinc(hashMap2);
+            hashMap2.clear();
+            hashMap2 = distincMap;
 
 
-        /*for (int i = 1; hashMap.size() < exam_number; ) {
-            // 因为在运算的过程中会出现n÷0的情况，这时候就会抛异常
-            Expression expression = new Expression(3, answer_range);
-            if ((hashMap.get(expression.toString()) != null || !"".equals(expression.toString()))
-                    &&
-                    !expression.divisorIsZero()) {
+            for (Expression expression : distincMap.keySet()) {
                 hashMap.put(expression.toString(), expression.getRoot().result.toString());
-                i++;
+                if (hashMap.size() == exam_number) {
+                    break;
+                }
             }
-        }*/
-        // TODO
+
+        }
 
         return hashMap;
     }
@@ -81,7 +77,7 @@ public class AnswerUtils {
         BufferedReader exerciseReader = new BufferedReader(exerciseIn);
         BufferedReader answerReader = new BufferedReader(answerIn);
         String string = null;
-        // 存储练习的答案
+        // 存储的练习答案
         while ((string = exerciseReader.readLine()) != null) {
             string = string.replaceAll(" +", "");
             string = string.replaceAll("\uFEFF", "");
@@ -112,19 +108,26 @@ public class AnswerUtils {
         PrintWriter printWriter = new PrintWriter(fileWriter);
         printWriter.println(" ");
         printWriter.print("Correct:正确题数："+rightRsult.size()+"(");
+        System.out.print("Correct:正确题数："+rightRsult.size()+"(");
         for (int str: rightRsult) {
             printWriter.print(str+",");
+            System.out.print(str+",");
         }
         printWriter.println(")");
+        System.out.println(")");
         printWriter.print("Wrong:错误题数："+errorRsult.size()+"(");
+        System.out.print("Wrong:错误题数："+errorRsult.size()+"(");
         for (int str: errorRsult) {
             printWriter.print(str+",");
+            System.out.print(str+",");
         }
         printWriter.print(")");
+        System.out.print(")");
         printWriter.flush();
         fileWriter.flush();
         printWriter.close();
         fileWriter.close();
+        System.out.println("比较完成,");
     }
 
     /**
@@ -132,25 +135,36 @@ public class AnswerUtils {
      * @param map
      * @return
      */
-    public static Map<Expression, String> distinc(Map<Expression, String> map){
-        for (Expression key : map.keySet()) {
+    public static HashMap<Expression, String> distinc(HashMap<Expression, String> map){
+        HashMap<Expression, String> distincMap = new HashMap<>();
+        List<Expression> repeatList = new ArrayList<>();
+        for (String key : map.values()) {
             List<Expression> keyList = getRepratKeys(map, key);
-            if (keyList.size() == 2) {
+            if (keyList.size() > 1) {
                 // 获取两个表达式的根节点
                 BiTreeNode root1 = keyList.get(0).getRoot();
-                BiTreeNode root2 = keyList.get(1).getRoot();
-                boolean isomorphism = DistincOperatorUtils.isomorphism(root1, root2);
-                if (isomorphism) {
-                    // 如果题目重复，则移除第二道
-                    map.remove(keyList.get(1));
+                for (int i = 1; i < keyList.size(); i++){
+                    BiTreeNode root2 = keyList.get(i).getRoot();
+                    boolean isomorphism = DistincOperatorUtils.isomorphism(root1, root2);
+                    if (isomorphism) {
+                        // 如果题目重复，则移除第二道
+                        //map.remove(keyList.get(i));
+                        repeatList.add(keyList.get(i));
+                    }
                 }
+
             }
         }
-        return map;
+        for (Expression expression : map.keySet()) {
+            if (!repeatList.contains(expression)) {
+                distincMap.put(expression, expression.getRoot().result.toString());
+            }
+        }
+        return distincMap;
     }
 
 
-    public static List<Expression> getRepratKeys(Map<Expression, String> map, Expression value){
+    public static List<Expression> getRepratKeys(Map<Expression, String> map, String value){
         Set set = map.entrySet(); //通过entrySet()方法把map中的每个键值对变成对应成Set集合中的一个对象
         Iterator<Map.Entry<Expression, String>> iterator = set.iterator();
         ArrayList<Expression> arrayList = new ArrayList();

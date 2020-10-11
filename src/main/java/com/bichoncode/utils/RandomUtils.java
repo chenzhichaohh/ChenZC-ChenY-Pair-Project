@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RandomUtils {
     public static int getARandom(int range){
         ThreadLocalRandom random = ThreadLocalRandom.current();
+        // 产生一个包括上限不包括下陷的值
         return random.nextInt(range);
     }
 }
